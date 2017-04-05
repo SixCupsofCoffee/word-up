@@ -112,7 +112,7 @@ function render() {
 
     // update the score on the scoreboard
     $("#current-score").text(currentScore());
-
+    $('#time-remaining').text(model.secondsRemaining);
     // TODO 2
     // Update the curent time remaining on the scoreboard.
 
