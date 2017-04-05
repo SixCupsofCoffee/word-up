@@ -154,9 +154,8 @@ function render() {
         // show the disallowed letters underneath
         var redLetterChips = disallowedLetters.map(disallowedLetterChip);
 
-        // TODO 8
         // append the red letter chips to the form
-
+        $("#word-attempt-form").append(redLetterChips);
     }
 
     // if the game is over
@@ -234,12 +233,12 @@ $(document).ready(function() {
         render();
     });
 
-    // TODO 6
-    // Add another event handler with a callback function.
     // When the textbox content changes,
     // update the .currentAttempt property of the model and re-render
 
-
+    $('#textbox').on("input", function() {
+      model.currentAttempt = $('#textbox').val();
+    });
     // when the form is submitted
     $("#word-attempt-form").submit(function(evt) {
         // we don't want the page to refresh
@@ -276,7 +275,11 @@ function isDisallowedLetter(letter) {
     // TODO 7
     // This should return true if the letter is not an element of
     // the .allowedLetters list in the model
-    return false;
+    if (model.allowedLetters.indexOf(letter) === -1) {
+      return true;
+    } else {
+      return false;
+    };
 }
 
 /**
