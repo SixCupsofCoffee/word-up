@@ -140,7 +140,7 @@ function render() {
     // Render the word submissions
 
 
-    // Set the value of the textbox
+    // Set the value of the textbox and give it focus on game start
     $("#textbox").focus()
     .val(model.currentAttempt);
 
