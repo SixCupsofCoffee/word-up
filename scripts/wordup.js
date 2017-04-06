@@ -125,6 +125,10 @@ function render() {
     // clear stuff
     $("#allowed-letters").empty();
     $("#word-submissions").empty();
+    $('#textbox').removeAttr('disabled');
+    $('#textbox').removeClass('bad-attempt');
+    $('.disallowed-letter').remove();
+
     // TODO 10
     // Add a few things to the above code block (underneath "// clear stuff").
 
@@ -163,8 +167,9 @@ function render() {
     if (gameOver) {
         // TODO 9
         // disable the text box and clear its contents
-
-    }
+        $('#textbox').attr('disabled', 'disabled')
+        .val('');
+    };
 }
 
 
