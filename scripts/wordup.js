@@ -19,7 +19,9 @@ var model = {
     currentAttempt: "",
 
     // a list of the words the user has previously submitted in the current game
-    wordSubmissions: []
+    wordSubmissions: [],
+
+    realWords: []
 }
 
 /*
@@ -33,6 +35,7 @@ function startGame() {
     model.wordSubmissions = [];
     model.currentAttempt = "";
     model.timer = startTimer();
+    model.realWords = [];
 }
 
 /*
@@ -74,21 +77,37 @@ function checkIfWordIsReal(word) {
     // make an AJAX call to the Pearson API
     $.ajax({
         // TODO 13 what should the url be?
-        url: "www.todo13.com",
+        url: "http://api.pearson.com/v2/dictionaries/laad3/entries",
+        data: {
+          headword: word
+        },
         success: function(response) {
             console.log("We received a response from Pearson!");
 
             // let's print the response to the console so we can take a looksie
-            console.log(response);
-
             // TODO 14
             // Replace the 'true' below.
             // If the response contains any results, then the word is legitimate.
             // Otherwise, it is not.
-            var theAnswer = true;
+
+            //Change to function
+            var theAnswer = function(word) {
+
+              if (response.results.length > 0) {
+                return true;
+              } else {
+                return false;
+              };
+            };
 
             // TODO 15
             // Update the corresponding wordSubmission in the model
+            for (i=0; i < model.wordSubmissions.length; i++) {
+              if (model.wordSubmissions[i].word === word) {
+                model.wordSubmissions[i]["isRealWord"] = theAnswer(word);
+              };
+            };
+
 
 
             // re-render
@@ -142,6 +161,8 @@ function render() {
 
     // TODO 11
     // Render the word submissions
+    var wordChips = model.wordSubmissions.map(wordSubmissionChip)
+    $('#word-submissions').append(wordChips);
 
 
     // Set the value of the textbox and give it focus on game start
@@ -161,6 +182,7 @@ function render() {
         // append the red letter chips to the form
         $("#word-attempt-form").append(redLetterChips);
     }
+
 
     // if the game is over
     var gameOver = model.secondsRemaining <= 0
@@ -189,6 +211,8 @@ function letterChip(letter) {
         .attr("class", "tag tag-default tag-sm");
 
     return letterChip.append(scoreChip);
+
+
 }
 
 /**
@@ -202,20 +226,28 @@ function wordSubmissionChip(wordSubmission) {
 
     // if we know the status of this word (real word or not), then add a green score or red X
     if (wordSubmission.hasOwnProperty("isRealWord")) {
-        var scoreChip = $("<span></span>").text("⟐");
+        var thisScore = wordScore(wordSubmission.word);
+        // var scoreChip = $("<span></span>").text("⟐");
         // TODO 17
         // give the scoreChip appropriate text content
-
-        // TODO 18
-        // give the scoreChip appropriate css classes
+        if (wordSubmission.isRealWord === true) {
+          var scoreChip = $("<span></span>").attr("class", "tag tag-sm tag-primary")
+          .text(thisScore);
+        } else {
+          var scoreChip = $("<span></span>").attr("class", "tag tag-sm tag-danger")
+          .text("X");
+        }
 
         // TODO 16
         // append scoreChip into wordChip
+        $(wordChip).append(scoreChip);
 
     }
 
     return wordChip;
 }
+
+
 
 /**
  * Given a disallowed letter, returns a DOM element to display the letter
@@ -302,8 +334,12 @@ function disallowedLettersInWord(word) {
  */
 function containsOnlyAllowedLetters(word) {
     // TODO 12
-    // Return the actual answer.
+    disallowedLetterArray = disallowedLettersInWord(word);
+    if (disallowedLetterArray.length < 1) {
     return true;
+  } else {
+    return false;
+  };
 }
 
 /**
@@ -330,11 +366,17 @@ function letterScore(letter) {
 function wordScore(word) {
     // split the word into a list of letters
     var letters = word.split("");
-
+    console.log(letters);
     // TODO 19
     // Replace the empty list below.
     // Map the list of letters into a list of scores, one for each letter.
     var letterScores = [];
+    letters.forEach(function(letter) {
+      if (scrabblePointsForEachLetter.hasOwnProperty(letter)) {
+        letterScores.push(scrabblePointsForEachLetter[letter]);
+      };
+    });
+
 
     // return the total sum of the letter scores
     return letterScores.reduce(add, 0);
