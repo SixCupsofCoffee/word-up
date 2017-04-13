@@ -56,7 +56,9 @@ function addNewWordSubmission(word) {
     // Do we already have a wordSubmission with this word?
     // TODO 21
     // replace the hardcoded 'false' with the real answer
-    var alreadyUsed = false;
+    var alreadyUsed = model.wordSubmissions.filter(function(submission) {
+        return submission.word === word;
+    }).length > 0;
 
     // if the word is valid and hasn't already been used, add it
     if (containsOnlyAllowedLetters(word) && alreadyUsed == false) {
@@ -366,7 +368,6 @@ function letterScore(letter) {
 function wordScore(word) {
     // split the word into a list of letters
     var letters = word.split("");
-    console.log(letters);
     // TODO 19
     // Replace the empty list below.
     // Map the list of letters into a list of scores, one for each letter.
@@ -400,7 +401,10 @@ function currentScore() {
 
     // TODO 20
     // return the total sum of the word scores
-    return 0;
+    var score = wordScores.reduce(function(a, b) {
+      return a + b;
+    }, 0);
+    return score;
 }
 
 
